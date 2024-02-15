@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../globals.css">
+    <link rel="stylesheet" href="style.css">
+    <title>SHOP</title>
+</head>
+
+<body class="page-container">
+    <menu>
+        <ul class="menu-items">
+            <li class="menu-items_item">PRODUTOS</li>
+            <li class="menu-items_item">MARCAS</li>
+            <li class="menu-items_item">MAIS VENDIDOS</li>
+            <li class="menu-items_item">TENDÊNCIAS</li>
+        </ul>
+    </menu>
+
+    <section class="container-shop-items">
+        <div class="container-search">
+            <input type="text" id="input-category" name="search-input">
+            <button id="search-button" name="search-button">pesquisar</button>
+            <div id="search-message"></div>
+        </div>
+        <ul class="container-cards" id="container-cards">
+            <script>
+                const inputCategory = document.getElementById('input-category')
+                const searchButton = document.getElementById('search-button')
+
+                let listProduct = []
+
+                const BASE_API = 'https://fakestoreapi.com'
+
+                const getList = () => {
+                    fetch(BASE_API + '/products')
+                        .then(async (res) => {
+                            if (res.status == 200) {
+                                listProduct = await res.json()
+                                reenderList(listProduct)
+                                return
+                            }
+                            alert(await res.text())
+                        })
+                }
+
+                getList()
+                const reenderList = (list) => {
+                    var htmlToRender = ""
+                    list.forEach(element => {
+                        htmlToRender +=
+                            `   
+                        <li class="card-item">
+                            <img src="${element.image}" alt="product">
+                            <p>${element.title}</p>
+                            <p>R$ ${element.price}</p>
+                            </li>`
+                    });
+
+                    document.getElementById('container-cards').innerHTML = htmlToRender
+                }
+
+                const filterList = () => {
+                    const searchValue = inputCategory.value 
+                    const searchMessage = document.getElementById('search-message')
+                    if (!searchValue) {
+                        searchMessage.innerText = ''
+                        getList()
+                        return
+                    }
+                    searchMessage.innerHTML = `
+                        <p>Resultado para: ${searchValue}</p>
+                        `
+                    const filteredList = listProduct.filter(x => x.title.includes(searchValue))
+                    filteredList.length > 0 ? reenderList(filteredList ) : reenderList([])
+                }
+                searchButton.addEventListener('click', filterList, false)
+            </script>
+        </ul>
+    </section>
+</body>
+
+</html>
